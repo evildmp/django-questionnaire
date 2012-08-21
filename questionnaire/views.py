@@ -6,7 +6,7 @@ Created on Jun 26, 2012
 '''
 from django.http import HttpResponseRedirect,Http404
 from django.core.urlresolvers import reverse
-from models import  Questionnaire,AnswerSet,QuestionAnswer,Question
+from models import  Questionnaire,AnswerSet,QuestionAnswer,Question, QuestionGroup
 from django.template import  RequestContext
 from django.shortcuts import render_to_response
 from questionnaire.forms import make_question_group_form
@@ -22,7 +22,7 @@ def questionnaire_index (request):
     
     group_list=[x for x in questionnaire]
     
-    return render_to_response('questionnaire/questionnaire_index.html',{'group_list': group_list},context_instance=RequestContext(request))
+    return render_to_response('questionnaire/questionnaire_index.html',{'group_list': group_list },context_instance=RequestContext(request))
     
 @login_required
 def handle_next_questiongroup_form(request,questionnaire_id,questiongroup_id=None):
