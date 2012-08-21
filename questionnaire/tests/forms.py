@@ -4,7 +4,7 @@ Created on 26 Jul 2012
 @author: jjm20
 '''
 from django.test import TestCase
-from questionnaire.forms import get_choices, generate_charfield, generate_textfield, generate_boolean_field, generate_select_dropdown_field, generate_radioselect_field, generate_multiplechoice_field, FIELD_TYPES, make_question_group_form, create_question_answer_edit_form
+from questionnaire.forms import get_choices, generate_charfield, generate_textfield, generate_boolean_field, generate_select_dropdown_field, generate_radioselect_field, generate_multiplechoice_field, FIELD_TYPES, make_question_group_form,QuestionAdminForm
 from questionnaire.models import Question, Questionnaire, QuestionGroup, AnswerSet, QuestionAnswer
 from django.forms import Textarea, TextInput, BooleanField, ChoiceField, RadioSelect,CheckboxSelectMultiple, CharField, BaseForm
 from django.forms.fields import  MultipleChoiceField
@@ -12,6 +12,72 @@ from django.contrib.auth.models import User
 
 
 
+class QuestionAdminFormTestCase(TestCase):
+    '''
+     test custom QuestionAdminForm  for question creation
+     1.test selectionoptions/choices is required for choicefields questions it should not be None
+       if user enter leave the field empty for choicefield i.e None  validation will fail i.e form.is_valid is False 
+     2.test selectionoptions should be comma seperated strings eg A,B,C for choicefields
+     3.test selectoptions is not required for Non choicefields i.e charfield and textField,booleanfield 
+      ie None for field_type that are NOT choicefields e.g charfield
+      if user enter selectoptions for these non choicefields form validation will fail -form.is_valid is False otherwise True
+    '''
+
+    def test_selectoptions_not_required_for_booleanfield(self):
+       
+        questionadmintest_form=QuestionAdminForm({'label':'question_test1','field_type':'booleanfield','selectoptions':None})  
+        self.assertEqual(questionadmintest_form.is_valid(), True,'selectionsoptions is NOT required for BooleanField')
+       
+        questionadmintest_form2=QuestionAdminForm({'label':'question_test6','field_type':'booleanfield','selectoptions': 'A,B,C'})
+        self.assertEqual(questionadmintest_form2.is_valid(),False,' form data validation will be False if options is provided for booleanfield  ')
+    
+    def test_selectoptions_required_for_select_dropdown_field(self):
+        questionadmintest_form=QuestionAdminForm({'label':'question_test2','field_type':'select_dropdown_field','selectoptions':None})  
+        self.assertEqual(questionadmintest_form.is_valid(), False,'selectionsoptions is required for select_dropdown_field')
+        
+    def test_selectoptions_required_for_radioselectfield(self):
+        questionadmintest_form=QuestionAdminForm({'label':'question_test3','field_type':'radioselectfield','selectoptions':None})  
+
+        self.assertEqual(questionadmintest_form.is_valid(), False,'selectionsoptions is required for radioselectfield')   
+        
+    def test_required_selectoptions_multiplechoicefield(self):
+        questionadmintest_form=QuestionAdminForm({'label':'question_test4','field_type':'multiplechoicefield','selectoptions':None})  
+        self.assertEqual(questionadmintest_form.is_valid(), False,'selectionsoptions is required for multiplechoicefield')   
+            
+    def test_delimiter_is_required_for_choicefields_selectoptions(self):
+        
+        questionadmintest_form=QuestionAdminForm({'label':'question_test5','field_type':'multiplechoicefield','selectoptions':'AB'})      
+        self.assertEqual(questionadmintest_form.is_valid(),False,'multiplechoicefield selectionsoptions  form data validation will be false if options are not separated with delimiter i.e comma  ')
+        
+        questionadmintest_form2=QuestionAdminForm({'label':'question_test5','field_type':'radioselectfield','selectoptions':'A B C'})      
+        self.assertEqual(questionadmintest_form2.is_valid(),False,' radioselectfield selectionsoptions  form data will not validate  if options are not separated with delimiter i.e comma  ')
+        
+        
+        questionadmintest_form=QuestionAdminForm({'label':'question_test5','field_type':'multiplechoicefield','selectoptions':'A,B'})      
+        self.assertEqual(questionadmintest_form.is_valid(),True,'multiplechoicefield selectionsoptions  form data validation will pass is option if separated with delimiter i.e comma  ')
+        
+        questionadmintest_form1=QuestionAdminForm({'label':'question_test5','field_type':'select_dropdown_field','selectoptions':'A,B,C'})      
+        self.assertEqual(questionadmintest_form1.is_valid(),True,' select_dropdown_field selectionsoptions  form data validation will pass if option is separated with delimiter i.e comma  ')
+         
+        questionadmintest_form2=QuestionAdminForm({'label':'question_test5','field_type':'radioselectfield','selectoptions':'A,B,C'})      
+        self.assertEqual(questionadmintest_form2.is_valid(),True,' radioselectfield selectionsoptions  form data validation will pass if option is separated with delimiter i.e comma  ')      
+        
+        
+    def test_selectionoptions_not_required_for_non_choice_fields(self):
+        
+        questionadmintest_form=QuestionAdminForm({'label':'question_test7','field_type':'charfield','selectoptions': None})
+        self.assertEqual(questionadmintest_form.is_valid(),True,'selectionsoptions form data validation will pass as selectoption is not required for Non choicefield  ')
+        
+        questionadmintest_form2=QuestionAdminForm({'label':'question_test8','field_type':'charfield','selectoptions': 'A,B'})
+        self.assertEqual(questionadmintest_form2.is_valid(),False,'selectionsoptions form data validation will be False as selectoption is not required for Non choicefield  ')
+        
+        questionadmintest_form3=QuestionAdminForm({'label':'question_test9','field_type':'textfield','selectoptions': 'A,B'})
+        self.assertEqual(questionadmintest_form3.is_valid(),False,'selectionsoptions form data validation will be False as selectoption is not required for Non choicefield  ')
+        
+        questionadmintest_form4=QuestionAdminForm({'label':'question_test6','field_type':'booleanfield','selectoptions': 'ABC'})
+        self.assertEqual(questionadmintest_form4.is_valid(),False,'selectionsoptions form data validation will be False is option is NOT require for boolean  ')
+       
+        
 class FormsTestCase(TestCase):
     
     fixtures = ['test_questionnaire_fixtures.json']
@@ -36,7 +102,7 @@ class FormsTestCase(TestCase):
             or upon object creation
         '''
         choices_question = Question.objects.create(label='test', field_type='select_dropdown_field', selectoptions=None)
-        self.assertRaises(TypeError, get_choices ,choices_question)       
+        self.assertRaises((ValueError,TypeError), get_choices(choices_question))       
         
         
         
@@ -170,33 +236,4 @@ class FormsTestCase_WithFixture(TestCase):
             
             
     
-    def  test_create_question_answer_edit_form(self):
-        '''
-        The test is almost the same as the previous one but with the difference of form having
-        'initial' data
-        '''
-        testquestionnaire = Questionnaire.objects.get(pk=1)      
-        testquestiongroup=QuestionGroup.objects.get(pk=1)
-        self.user_test = User.objects.create_user('user', 'email@email.com', 'password')          
-        self.answerset = AnswerSet.objects.create(user=self.user_test,questionnaire=testquestionnaire,questiongroup=testquestiongroup)
-        user = User.objects.get(pk=1)
-        
-        self.question_answer_1 = QuestionAnswer.objects.create(question=Question.objects.get(pk=1),answer="charfield_answer",answer_set=AnswerSet.objects.get(pk=1))
-        self.question_answer_2 = QuestionAnswer.objects.create(question=Question.objects.get(pk=2),answer="textfield_answer",answer_set=AnswerSet.objects.get(pk=1))
-        self.question_answer_3 = QuestionAnswer.objects.create(question=Question.objects.get(pk=3),answer="True",answer_set=AnswerSet.objects.get(pk=1))  
-        
-        test_edit_form = create_question_answer_edit_form(user,testquestionnaire,testquestiongroup)
-        
-        expected = [    ('question 1','charfield_answer'),
-                        ('question 2','textfield_answer'),
-                        ('question 3',True)]
-        
-        self.assertTrue(issubclass(test_edit_form, BaseForm))
-        
-        
-        
-        for index in range(len(test_edit_form.base_fields)):
-
-            self.assertEqual(test_edit_form.base_fields.value_for_index(index).label, expected[index][0])
-            self.assertEqual(expected[index][1], test_edit_form.base_fields.value_for_index(index).initial) 
         

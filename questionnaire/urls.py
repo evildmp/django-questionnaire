@@ -9,13 +9,16 @@ urlpatterns = patterns('questionnaire.views',
         #url(r'^/$', view = '<view_name>',name = 'a_name'),              
           url (r'^$', 
                view= 'questionnaire_index',
-               name='questionnaire_index'),
-                
-                       
-          url(r'^qs/(?P<questionnaire_id>\d+)/(?P<order_info>\d+)/$', 
-          view = 'handle_next_questiongroup_form',
-          name = 'handle_next_questiongroup_form'),                      
+               name='index'),
     
+                       
+          url(r'^qs/(?P<questionnaire_id>\d+)/(?P<questiongroup_id>\d+)/$', 
+          view = 'handle_next_questiongroup_form',
+          name = 'handle_next_questiongroup_form') ,
+                                             
+          url(r'^qs/(?P<questionnaire_id>\d+)/$', 
+          view = 'handle_next_questiongroup_form',
+          name = 'handle_next_questiongroup_form') ,
                        
         url(r'^finish/$', 
             view = 'finish',

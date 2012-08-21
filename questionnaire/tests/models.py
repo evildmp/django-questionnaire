@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.db import models
-from questionnaire.models import QuestionAnswer, AnswerSet, Question, QuestionGroup, Questionnaire, FIELD_TYPE_CHOICES, QuestionGroup_order, Question_order, CustomListField
+from questionnaire.models import QuestionAnswer, AnswerSet, Question, QuestionGroup, Questionnaire, QuestionGroup_order, Question_order, CustomListField
+#from questionnaire.models.Question import FIELD_TYPE_CHOICES
 from django.db.models.fields import CharField
 from django.db import IntegrityError
 

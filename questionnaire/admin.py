@@ -2,13 +2,17 @@
 Created on Jul 11, 2012
 
 @author: mzd2
+@author: ayoola_al
 '''
 from django.contrib import admin
-from models import Question, QuestionGroup, Questionnaire, QuestionGroup_order, Question_order, AnswerSet, QuestionAnswer,QuestionAdminForm
- 
+from models import Question, QuestionGroup, Questionnaire, QuestionGroup_order, Question_order, AnswerSet, QuestionAnswer
+from forms import QuestionAdminForm
+
+
 class QuestionAdmin(admin.ModelAdmin):
     '''
-    custom form for display and creating question in the admin 
+    custom the list display of selectionoptions in the admin
+    when display and creating questions in the admin 
     
     '''
     form=QuestionAdminForm

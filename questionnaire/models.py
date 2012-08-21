@@ -5,35 +5,45 @@ Created on Jul 10, 2012
 @author: ayoola
 '''
 from django.db import models
-
 from django.contrib.auth.models import User
-from django import forms
+
 
 
 class CustomListField(models.TextField):
     '''
-    for creating  custom list field override some model.fields methods
-    TODO: improve the description of what this is, and why you would want to use it
+    for creating  custom list field override some model.fields methods i.e 
+    1.to_python ensure the custom field is appro
+    The SubfieldBase metaclass ensures  to_python() method to be called automatically when customfield is created,
+    otherwise it will not be called
+    https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#the-subfieldbase-metaclass
+    
     '''
-    __metaclass__ = models.SubfieldBase#TODO: document what the significance of this is
+
+
+    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         self.token = kwargs.pop('token', ',')
     
         kwargs={'default':None,'null':True,'blank':True,
-                'help_text':'Enter option for select Field Type seperated by comma e.g No ,Yes,Not Applicable . TO EDIT EXISTING OPTIONS CLEAR THE OPTIONS AND TYPE AFRESH '}
+                'help_text':'Enter option for select Field Type seperated with a comma e.g No ,Yes,Not Applicable '}
         
         super(CustomListField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
         '''
-        @return: list if it exist 
-        TODO:consider imporoving this to give more detail, ie what do you pass in to value and how does the conversion to list happen?
+        @return: list if it exist otherwise if there value it will create a list
+        Converts a value as returned by  database( or a serializer) to a Python object in this case a python list
+        1.if no value i.e value is none,it will do nothing and return back to caller to handle the field validitation appropriately
+        2.if the value is already  a list it returns the list
+        3.if the value is string separated by token i.e (,) it convert the string  to list  e.g A,B,C will be converted to [A,B,C]
+        
         '''
-        if not value: return #TODO: is this the same as return None?
+        if not value: return 
         if isinstance(value, list):
             return value
-        return value.split(self.token)
+#        return value.split(self.token)
+        return [item.strip() for item in value.split(",")]
 
     def get_db_prep_value(self, value,connection=None,prepared=False):
         '''
@@ -43,33 +53,37 @@ class CustomListField(models.TextField):
         assert(isinstance(value, list) or isinstance(value, tuple))
         return self.token.join([unicode(s) for s in value])
 
-#TODO: what is this tuple used for?
-FIELD_TYPE_CHOICES=(('charfield','charfield'),('textfield','textfield'),('booleanfield','boolean'),('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('multiplechoicefield','multiplechoicefield'))
-    
+
+
 class Question(models.Model):
     '''
     model question objects attributes
     define attributes of a question:
     1.label : the actual question  eg what is your name?
     2.field_type: type of questions or type of answers you expect or require for the question e.g 
-        booleanfield -if answer require is True or False
-        charfield-if answer require typing some info in a form field 
-        textfield- if answer require typing more detail info in a form text field 
-        select_dropdown_field- if answer require selecting one answer from some options 
-        multiplechoicefield-if answer require selecting one or more answer from some options
-        radioselectfield-if answer require selecting only one answer from some options 
-    3.selectoptions :list of choices or options available for  question .Required for field type is choicefields i.e select_dropdown_field,radioselectfield, multiplechoicefield
+        booleanfield -if the question answer require is True or False, this is rendered as check boxes -if checked means True (Boolean not string)
+        charfield-if the question answer require typing some info in a form field 
+        textfield- if the  question answer require typing more detail info in a form text field 
+        select_dropdown_field- if the question answer require selecting one answer from some options  
+        multiplechoicefield-if the question answer require selecting one or more answer from some options ,this options are rendered as multiplechoice checkboxes in a form
+        radioselectfield-if  the question  answer require selecting only one answer from some options ,this  options are rendered as radio buttons in a form
+    3.selectoptions :list of choices or options available for  question .Required for field type that is choicefields i.e select_dropdown_field,radioselectfield, multiplechoicefield
                      otherwise selectoptions is None .options stored as comma ","seperarted strings
                      e.g selectoptions for a question of field_type-radioselectfield may be 'Yes',' No' ,'Not Applicable'
-    
+                     selectoptions for a choicefield MUST be 2 or more choices/options to make sense e.g selectoptions A,B
+    4.FIELD_TYPE_CHOICES: tuple of tuples stores the  available choices for question field_type as pair of key(label),value string 
+                    e.g field type 'charfield' will stored as 'charfield'  
     '''
     class Meta():
         db_table ='question'
+        
+    FIELD_TYPE_CHOICES=(('charfield','charfield'),('textfield','textfield'),('booleanfield','boolean'),
+                        ('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('multiplechoicefield','multiplechoicefield'))
     
     label=models.CharField('question',max_length=255)
     field_type=models.CharField(choices=FIELD_TYPE_CHOICES,max_length=100)    
     selectoptions=CustomListField()
-
+    
     def __unicode__(self):
         return 'Question:%s FieldType:%s Selectoptions:%s' %(self.label, self.field_type,str(self.selectoptions))
     
@@ -83,56 +97,6 @@ class Question(models.Model):
                 self.selectoptions = None
             
         super(Question,self).save(*args,**kwgs)
-
-#TODO: Move this to forms.py
-class CustomListWidget(forms.Textarea):
-    '''
-    create flatten custom widget use to render CustomList Field 
-    displays selectoptions List as string of strings  separated by comma 
-    e.g customList field [A,B,C] will be displayed and stored as A,B,C string
-    '''
-    def render(self, name, value, attrs=None):
-        if  value :
-            value = ','.join(str(v) for v in value)
-        return super(CustomListWidget, self).render(name, value, attrs)
-
-#TODO: move this to forms.py
-class QuestionAdminForm(forms.ModelForm):
-    '''
-    overide admin form validation for  Question selectoptions attribute 
-    ensure user enter valid selectionoptions/choices for all  field types 
-    1.check selectoptions field for choicefield i.e multiplechoice ,radioselectfield and select_dropdown_field field_type 
-    is not empty and are   ","  separated string
-    2.check the selectioptions for Non choice field types are None or Empty i.e charfield,textfield ,booleanfield 
-    if error appropriate error message will be displayed
-    Questions are reuseable
-    '''
-    class Meta:
-        model = Question
-        widgets = {'selectoptions': CustomListWidget(),}
-
-    def clean(self):
-        '''
-        custom clean for select options validation
-        @return: cleaned_data
-        
-        '''
-        field_type=self.cleaned_data["field_type"]
-        selectoptions = self.cleaned_data["selectoptions"]
-        
-        if field_type  in ['select_dropdown_field','radioselectfield', 'multiplechoicefield'] : 
-            
-            if  not selectoptions:
-                raise forms.ValidationError("Select Options is required for "+ str(field_type)+ " enter valid options seperated with commas e.g No,Yes,Not Applicable")        
-          
-            elif  ","  not in  selectoptions :
-                raise forms.ValidationError("Enter valid options seperated with comma e.g No,Yes,Not Applicable")
-                
-        elif field_type in ['charfield','textfield','booleanfield']:
-            if selectoptions :
-                raise forms.ValidationError("Select Options is not required  for " + str(field_type) + " Must Be Left Empty")
-        
-        return self.cleaned_data
 
     
 class QuestionGroup(models.Model):
@@ -233,4 +197,15 @@ class QuestionAnswer(models.Model):
     
     def __unicode__(self):
         return 'question:%s answer:%s answer_set:%s' %(str(self.question), str(self.answer), str(self.answer_set))
-
+    
+    def save(self,*args,**kwgs):
+        '''
+          django multiple choicefield answers are by default a list 
+          ensure answers for choicefield  questions if it is a  list are saved as  string seperated by comma e.g A,B,C
+          only for choicefields  i.e select_dropdown_field,radioselectfield, multiplechoicefield 
+        '''
+        if not self.id:
+            if isinstance(self.answer,list):
+                    self.answer = ','.join(self.answer)
+            
+        super(QuestionAnswer,self).save(*args,**kwgs)
