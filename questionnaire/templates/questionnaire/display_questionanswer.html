@@ -1,11 +1,12 @@
 {% extends "base_questionnaire.html" %}
 
-{% block title %}
-	<h1>questionanswer display group {{questiongroup_id}} </h1>
-{% endblock %}
+
+	
+
 
 {% block content %}
-	 
+	<title>{% block title %}questionanswer display group {{questiongroup_id}}{% endblock %}</title>	 
+	 <h1>questionanswer display group {{questiongroup_id}} </h1>
 	{%csrf_token %}
 	{% if questionanswer %}
     	<h3>Questionanswer Display Questiongroup:{{questiongroup_id}} </h3>

@@ -1,15 +1,15 @@
 {% extends "base_questionnaire.html" %}
 
-{% block title %}
-	<h1> allquestionanswers for  user:{{user}} {{questionnaire.name}}</h1>
-{% endblock %}
 
 {% block content %}	 
+	<title>{% block title %}allquestionanswers for  user:{{user}} {{questionnaire.name}}{% endblock %}</title>	 
+
+	
 	
 	{%csrf_token %}
 	{% if questionanswer_list %}
     
-   		<h3>All question answers for {{questionnaire.name}} questiongroup {{questiongroup_id}} user: {{user}}  </h3>
+   		<h3>All question answers for {{questionnaire.name}} questiongroup {{questiongroup_id}} , user: {{request.user}}  </h3>
    		{% if groups_list %}
      
     	<ul>

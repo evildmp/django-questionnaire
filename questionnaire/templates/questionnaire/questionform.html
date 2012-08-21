@@ -2,14 +2,14 @@
 
 
 {% block content %}
+<title>{% block title %}Question Form : {{questionnaire.name}} {{questiongroup}}{% endblock %}</title>
 <form method="post" action=".">
 	{%csrf_token %}
 
 
-	<h1>{{questionnaire.name}} {{questiongroup}}</h1>
-	<h2>{{questionnaire.name}}</h2> 
+	<h2>Questionnaire Name: {{questionnaire.name}}</h2>
 	<h3>QuestionGroup :{{questiongroup}}</h3>
-	<h3>User :{{request.user}}</h3>
+	<h4>User :{{request.user}}</h4>
 
 	
 	{% for field in form %} 

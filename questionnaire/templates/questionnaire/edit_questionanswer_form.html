@@ -1,11 +1,12 @@
 {% extends "base_questionnaire.html" %}   
    	 
-{% block title %}
+
+	
+
+
+{% block content %}	  
+    <title>{% block title %}EditForm Group: {{questiongroup_id}} {{questionnaire.name }} QuestionAnswer {% endblock %}</title>	          
 	<h1>EditForm Group: {{questiongroup_id}} {{questionnaire.name }} QuestionAnswer  </h1>
-{% endblock %}
-
-{% block content %}	                     
-
 	{% if  form.fields %}   
     	<form method="post" action=".">  
         {% csrf_token %}

@@ -1,17 +1,17 @@
 {% extends "base_questionnaire.html" %}
 
-{% block title %}
-	Questionnaire Index
-	<h1>user : {{user}}</h1>
-{% endblock %}
+
 
 {% block content %}
+	<title>{% block title %}user : {{user}} - Index{% endblock %}</title>
+	<h1>Questionnaire Index</h1>
+	<h1>user : {{user}}</h1>
 	{% if group_list %}
 	<h2>Try questionnaire</h2>
-	questionnaire_ids : {{group_list}}
-
+	
+		
          {% for x in group_list %}
-         <li> <a href="qs/{{ x.id }}/">Questionnaire No : {{ x.name }}</a></li>
+         <li> <a href="qs/{{ x.id }}/">Questionnaire Name : {{ x.name }}</a></li>
                      
          {% endfor %}
              

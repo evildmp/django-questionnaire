@@ -140,7 +140,7 @@ def finish(request):
     '''
      just a page to redirect to after sucesssful completion of question form this can be change to any page 
     '''
-    return render_to_response('questionnaire/finish.html')    #you will still want to pass this through the RequestContext, which enables middleware to add things to the response  eg. context_instance=RequestContext(request)
+    return render_to_response('questionnaire/finish.html',context_instance=RequestContext(request))    #you will still want to pass this through the RequestContext, which enables middleware to add things to the response  eg. context_instance=RequestContext(request)
 
 
 @login_required

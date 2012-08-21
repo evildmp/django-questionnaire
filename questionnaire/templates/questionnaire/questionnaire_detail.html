@@ -1,10 +1,12 @@
 {% extends "base_questionnaire.html" %}
                
-{% block title %}
-	<h1>{{questionnaire.name}} detail</h1>
-{% endblock %}
-	 
+
+	
+
+
 {% block content %}
+	<title>{% block title %}{{questionnaire.name}} detail{% endblock %}</title>	 
+	<h1>{{questionnaire.name}} detail</h1>
 	{%csrf_token %}  
     	{% if  groups_list %}     
         	<p><h3>Questionnaire: {{questionnaire.name}}  user: {{user}}</h3></p>
