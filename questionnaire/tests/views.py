@@ -45,7 +45,7 @@ class QuestionnaireViewTests(TestCase):
             A get request to this view without a logged in user should redirect to the default login url
         """
         
-        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id':1, 'order_info':1})
+        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id':1, 'questiongroup_id':1})
         response = self.client.get(url)
         self.assertEquals (302, response.status_code )
         self.assertEquals (response['Location'], 'http://testserver/accounts/login/?next=%s' % url )
@@ -61,7 +61,7 @@ class QuestionnaireViewTests(TestCase):
         """        
         
         self.client.login(username='user', password='password') 
-        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id':1, 'order_info':1})   
+        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id':1})   
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200, 'user authenticated and can access the page')
         self.assertTemplateUsed('questionform.html') 
@@ -91,7 +91,7 @@ class QuestionnaireViewTests(TestCase):
         """
         
         self.client.login(username='user', password='password') 
-        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id': 2, 'order_info':1})
+        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id': 2, 'questiongroup_id':1})
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 404, 'There are no questionnaire with id 2!')
         
@@ -107,7 +107,7 @@ class QuestionnaireViewTests(TestCase):
         """
         
         self.client.login(username='user', password='password')
-        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id':1, 'order_info':1})
+        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id':1, 'questiongroup_id':1})
         post_data =  {u'1': [u'a'], u'2': [u'a'], u'3': [u'True']}
         resp = self.client.post(url,post_data)        
         self.assertEqual(302, resp.status_code)      
@@ -125,7 +125,7 @@ class QuestionnaireViewTests(TestCase):
             3. It should redirect to the finish url.
         """
         self.client.login(username='user', password='password')        
-        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id': 1, 'order_info': 2})
+        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id': 1, 'questiongroup_id': 2})
         post_data =  {u'4': [u'Dropdown 1'], u'5': [u'Radio 1'], u'6': [u'MultipleChoice 1']}
         resp = self.client.post(url,post_data)     
         self.assertEqual(resp.status_code, 302)     
@@ -150,7 +150,7 @@ class QuestionnaireViewTests(TestCase):
         self.question_answer_3 = QuestionAnswer.objects.create(question=Question.objects.get(pk=3),answer="True",answer_set=AnswerSet.objects.get(pk=1))  
         
         self.client.login(username='user', password='password')
-        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id': 1, 'order_info':1})
+        url = reverse('handle_next_questiongroup_form', kwargs={'questionnaire_id': 1, 'questiongroup_id':1})
         post_data =  {u'1': [u'b'], u'2': [u'b'], u'3': [u'True']}
         resp = self.client.post(url,post_data)
 
@@ -165,7 +165,7 @@ class QuestionnaireViewTests(TestCase):
         self.assertEqual(QuestionAnswer.objects.get(pk=1).answer, 'charfield')
         self.assertEqual(QuestionAnswer.objects.get(pk=4).answer, 'b')                
         self.assertNotEqual(QuestionAnswer.objects.get(pk=4).answer, QuestionAnswer.objects.get(pk=1).answer) 
-        self.assertEqual(QuestionAnswer.objects.all().count(), 5)
+        self.assertEqual(QuestionAnswer.objects.all().count(), 6)
         
         '''
         check if there are only 1 AnswerSet object created which means there is no extra AnswerSet object created
