@@ -408,8 +408,8 @@ class QuestionnaireViewTests(TestCase):
         url = reverse('all_question_answers_for_questiongroup', kwargs={'user_id':1,'questionnaire_id':1, 'questiongroup_id':1})   
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200, 'user authenticated and can access the page')
-        self.assertTemplateUsed('all_questionanswers.html') 
-        self.assertGreater(len(resp.context['context']), 3)
+        self.assertTemplateUsed('questionnaire/all_questionanswers.html') 
+        self.assertGreater(len(resp.context['questionanswer_list']), 3)
         
         
     def test_questionnaire_detail_list(self):
