@@ -80,7 +80,7 @@ class Question(models.Model):
         db_table ='question'
         
     FIELD_TYPE_CHOICES=(('charfield','charfield'),('textfield','textfield'),('booleanfield','boolean'),
-                        ('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('horinzontal_radioselect_field','horinzontal_radioselect_field'),('multiplechoicefield','multiplechoicefield'),('datefield','datefield'))
+                        ('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('horinzontal_radioselect_field','horinzontal_radioselect_field'),('multiplechoicefield','multiplechoicefield'))
     
     label=models.CharField('question',max_length=255)
     field_type=models.CharField(choices=FIELD_TYPE_CHOICES,max_length=100)    

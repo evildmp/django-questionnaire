@@ -111,7 +111,7 @@ class QuestionTestCase(TestCase):
         question_test = Question._meta
         
         FIELD_TYPE_CHOICES=(('charfield','charfield'),('textfield','textfield'),('booleanfield','boolean'),
-                        ('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('horinzontal_radioselect_field','horinzontal_radioselect_field'),('multiplechoicefield','multiplechoicefield'),('datefield','datefield'))
+                        ('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('horinzontal_radioselect_field','horinzontal_radioselect_field'),('multiplechoicefield','multiplechoicefield'))
         
         self.assertEqual(question_test.get_field('label').max_length, 255, 'length of Charfield should be 255')
         self.assertIsInstance(question_test.get_field('label'), CharField)

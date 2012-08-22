@@ -7,11 +7,11 @@ Created on Jun 26, 2012
 
 from django import forms
 from models import Question
-from django.forms.fields import CharField,BooleanField,ChoiceField,MultipleChoiceField,DateField
+from django.forms.fields import CharField,BooleanField,ChoiceField,MultipleChoiceField
 from django.forms.widgets import RadioSelect 
 from django.utils.datastructures import SortedDict
 from django.utils.safestring import mark_safe
-import datetime  
+
 
 
 class CustomListWidget(forms.Textarea):
@@ -58,7 +58,7 @@ class QuestionAdminForm(forms.ModelForm):
             elif  ","  not in  selectoptions :
                 raise forms.ValidationError("Enter valid options seperated with comma e.g No,Yes,Not Applicable")
                 
-        elif field_type in ['charfield','textfield','booleanfield','datefield']:
+        elif field_type in ['charfield','textfield','booleanfield']:
             if selectoptions :
                 raise forms.ValidationError("Select Options is not required  for " + str(field_type) + " Must Be Left Empty")
         
@@ -159,12 +159,6 @@ def generate_radioselect_field():
     ''' 
     return ChoiceField(widget=RadioSelect(),choices=[],show_hidden_initial=True)
 
-def generate_date_field():
-    
-    '''
-    @return forms dateField that is use to render date field in the format day month year
-    '''
-    return DateField(initial=datetime.date.today, widget=forms.DateInput(format = '%d/%m/%Y'), input_formats=('%d/%m/%Y',),show_hidden_initial=True,error_messages={'required': 'Enter Date in the format: day/month/year e.g 01/10/2012'})
 
 def generate_multiplechoice_field():
     '''
@@ -192,7 +186,7 @@ FIELD_TYPES={
             'radioselectfield':generate_radioselect_field,
             'horinzontal_radioselect_field':generate_horinzontal_radioselect_field,
             'multiplechoicefield':generate_multiplechoice_field,
-            'datefield':generate_date_field,
+
             }
 
 def make_question_group_form(questiongroup,questionnaire_id):
