@@ -105,7 +105,8 @@ def get_processed_questionsanswers(user,questionnaire_id,questiongroup_id=None,m
                         
                 if x.question.field_type =='booleanfield':
                     x.answer=True
-                if x.question.field_type == 'multiplechoicefield':
+                    
+                elif x.question.field_type == 'multiplechoicefield':
                     if ',' in x.answer:
                         x.answer = [str(y.strip()) for y in x.answer.split(',')]
                     else :

@@ -72,8 +72,7 @@ def handle_next_questiongroup_form(request,questionnaire_id,questiongroup_id=Non
     
     if questiongroup_id ==None:
         questiongroup=orderedgroups_list[0]
-        print "this a group"
-        print questiongroup
+
     else:
 #        questiongroup= [group for group in orderedgroups_list if group.id == questiongroup_id]     
         for group in orderedgroups_list:

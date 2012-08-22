@@ -7,10 +7,12 @@ Created on Jun 26, 2012
 
 from django import forms
 from models import Question
-from django.forms.fields import CharField,BooleanField,ChoiceField,MultipleChoiceField
+from django.forms.fields import CharField,BooleanField,ChoiceField,MultipleChoiceField,DateField
 from django.forms.widgets import RadioSelect 
 from django.utils.datastructures import SortedDict
-  
+from django.utils.safestring import mark_safe
+import datetime  
+
 
 class CustomListWidget(forms.Textarea):
     '''
@@ -48,7 +50,7 @@ class QuestionAdminForm(forms.ModelForm):
         field_type=self.cleaned_data["field_type"]
         selectoptions = self.cleaned_data["selectoptions"]
         
-        if field_type  in ['select_dropdown_field','radioselectfield', 'multiplechoicefield'] : 
+        if field_type  in ['select_dropdown_field','radioselectfield','horinzontal_radioselect_field', 'multiplechoicefield'] : 
             
             if  not selectoptions:
                 raise forms.ValidationError("Select Options is required for "+ str(field_type)+ " Enter valid options seperated with commas e.g No,Yes,Not Applicable")        
@@ -56,7 +58,7 @@ class QuestionAdminForm(forms.ModelForm):
             elif  ","  not in  selectoptions :
                 raise forms.ValidationError("Enter valid options seperated with comma e.g No,Yes,Not Applicable")
                 
-        elif field_type in ['charfield','textfield','booleanfield']:
+        elif field_type in ['charfield','textfield','booleanfield','datefield']:
             if selectoptions :
                 raise forms.ValidationError("Select Options is not required  for " + str(field_type) + " Must Be Left Empty")
         
@@ -92,6 +94,15 @@ def get_choices(question):
     show_hidden_initial is set to True applies to all field types 
     source:https://docs.djangoproject.com/en/dev/ref/forms/fields/#required
     '''
+        
+class HorizontalRadioRenderer(forms.RadioSelect.renderer):
+    '''
+    this class overide default radioselect widget rendering  by default radio buttons are rendered vertically 
+    '''
+    def render(self):
+        return mark_safe(u'\n'.join([u'%s\n' % x for x in self]))        
+        
+        
 def generate_charfield():
     '''
   
@@ -130,14 +141,30 @@ def generate_select_dropdown_field():
     choices is defaulted to empty list as the choices will be populate by get_choices() function with predefined choice method during form creation
     for details see source https://docs.djangoproject.com/en/dev/ref/forms/fields
     '''
-    return ChoiceField(choices=[])
+    return ChoiceField(choices=[],show_hidden_initial=True)
+
+def generate_horinzontal_radioselect_field():
+    '''
+    @return a ChoiceField that has a RadioSelect widget -if you require only one answer from atleast two or more options
+    choices is defaulted to empty list as the choices will be populate by get_choices() function with predefined choice method during form creation
+    rending the radio button  horizontally to render vertical change to widget=RadioSelect()
+    ''' 
+    return ChoiceField(widget=RadioSelect(renderer=HorizontalRadioRenderer),choices=[],show_hidden_initial=True)
 
 def generate_radioselect_field():
     '''
     @return a ChoiceField that has a RadioSelect widget -if you require only one answer from atleast two or more options
     choices is defaulted to empty list as the choices will be populate by get_choices() function with predefined choice method during form creation
+    rending the radio button  horizontally to render vertical change to widget=RadioSelect()
     ''' 
-    return ChoiceField(widget=RadioSelect,choices=[],show_hidden_initial=True)
+    return ChoiceField(widget=RadioSelect(),choices=[],show_hidden_initial=True)
+
+def generate_date_field():
+    
+    '''
+    @return forms dateField that is use to render date field in the format day month year
+    '''
+    return DateField(initial=datetime.date.today, widget=forms.DateInput(format = '%d/%m/%Y'), input_formats=('%d/%m/%Y',),show_hidden_initial=True,error_messages={'required': 'Enter Date in the format: day/month/year e.g 01/10/2012'})
 
 def generate_multiplechoice_field():
     '''
@@ -152,6 +179,7 @@ def generate_multiplechoice_field():
     return MultipleChoiceField(choices=[], widget=forms.CheckboxSelectMultiple(),show_hidden_initial=True,error_messages={'required': 'This question is required can not be empty select one or more answer '})
 
 
+
 '''
  FIELD_TYPES dict stores key value mapping of all fieldtypes as keys  to thier respective generate funtions as value.
  These functions generate the formfield for the field type with or without widgets/attribute as appropriate or required
@@ -162,7 +190,9 @@ FIELD_TYPES={
             'booleanfield': generate_boolean_field,
             'select_dropdown_field':generate_select_dropdown_field,
             'radioselectfield':generate_radioselect_field,
+            'horinzontal_radioselect_field':generate_horinzontal_radioselect_field,
             'multiplechoicefield':generate_multiplechoice_field,
+            'datefield':generate_date_field,
             }
 
 def make_question_group_form(questiongroup,questionnaire_id):
@@ -194,7 +224,7 @@ def make_question_group_form(questiongroup,questionnaire_id):
     
     for question in orderedgroups:
         
-        if question.field_type in ['select_dropdown_field','radioselectfield','multiplechoicefield']:
+        if question.field_type in ['select_dropdown_field','radioselectfield','horinzontal_radioselect_field','multiplechoicefield']:
             field=FIELD_TYPES[question.field_type]()
             field.choices=get_choices(question)    
             field.label = question.label

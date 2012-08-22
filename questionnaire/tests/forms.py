@@ -35,11 +35,16 @@ class QuestionAdminFormTestCase(TestCase):
         questionadmintest_form=QuestionAdminForm({'label':'question_test2','field_type':'select_dropdown_field','selectoptions':None})  
         self.assertEqual(questionadmintest_form.is_valid(), False,'selectionsoptions is required for select_dropdown_field')
         
+    def test_selectoptions_required_for_horinzontal_radioselect_field(self):
+        questionadmintest_form=QuestionAdminForm({'label':'question_test3','field_type':'horinzontal_radioselect_field','selectoptions':None})  
+
+        self.assertEqual(questionadmintest_form.is_valid(), False,'selectionsoptions is required for radioselectfield')   
+    
     def test_selectoptions_required_for_radioselectfield(self):
         questionadmintest_form=QuestionAdminForm({'label':'question_test3','field_type':'radioselectfield','selectoptions':None})  
 
         self.assertEqual(questionadmintest_form.is_valid(), False,'selectionsoptions is required for radioselectfield')   
-        
+    
     def test_required_selectoptions_multiplechoicefield(self):
         questionadmintest_form=QuestionAdminForm({'label':'question_test4','field_type':'multiplechoicefield','selectoptions':None})  
         self.assertEqual(questionadmintest_form.is_valid(), False,'selectionsoptions is required for multiplechoicefield')   
