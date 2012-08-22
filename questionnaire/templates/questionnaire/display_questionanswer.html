@@ -1,15 +1,24 @@
 {% extends "base_questionnaire.html" %}
 
 
-	
-
 
 {% block content %}
-	<title>{% block title %}questionanswer display group {{questiongroup_id}}{% endblock %}</title>	 
-	 <h1>questionanswer display group {{questiongroup_id}} </h1>
+	 <title>{% block title %}questionanswer display group {{questiongroup_id}} {% endblock %}</title>
 	{%csrf_token %}
-	{% if questionanswer %}
-    	<h3>Questionanswer Display Questiongroup:{{questiongroup_id}} </h3>
+
+    
+    <p><h3>Questionnaire : {{questionnaire.name}}     Questiongroup: {{questiongroup_id}}  </h3></p>
+	<p><h3>  user: {{request.user}}</h3></p>
+     
+    {% for question,answer in questionanswer %}
+    
+    	<strong><p>Question id : {{question.id}} , Question:{{question.label|capfirst}}</p></strong>
+		<div>Answer:{{ answer }} </div><br>
+	{% endfor %}
+	
+	
+		{% if questionanswer %}
+    	
    		{% if groups_list %}
      		<h4> Other QuestionGroups in {{questionnaire.name}}</h4>
     		<ul>
@@ -25,15 +34,6 @@
 	{%else%}
 		The group enter is not valid questiongroup  has no question answer
    	{%endif%}
-    
-    <p><h3>Questionnaire : {{questionnaire.name}}     Questiongroup: {{questiongroup_id}}  </h3></p>
-	<p><h3>  user: {{request.user}}</h3></p>
-     
-    {% for question,answer in questionanswer %}
-    
-    	<strong><p>Question id : {{question.id}}  Question:{{question.label|capfirst}}</p></strong>
-		<div>Answer:{{ answer }} </div><br>
-	{% endfor %}
 {% endblock %} 
       
    

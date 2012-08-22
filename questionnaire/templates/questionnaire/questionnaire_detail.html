@@ -3,10 +3,10 @@
 
 	
 
-
+	 
 {% block content %}
-	<title>{% block title %}{{questionnaire.name}} detail{% endblock %}</title>	 
-	<h1>{{questionnaire.name}} detail</h1>
+	<title>{% block title %}{{questionnaire.name}} detail{% endblock %}</title>
+	<h3>{{questionnaire.name}} detail</h3>
 	{%csrf_token %}  
     	{% if  groups_list %}     
         	<p><h3>Questionnaire: {{questionnaire.name}}  user: {{user}}</h3></p>
