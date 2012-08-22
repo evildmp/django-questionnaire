@@ -3,33 +3,29 @@
 
 
 {% block content %}
+	|	<a href="#try">Try questionnaire</a>	|	<a href="#check">Check/Edit questionnaire</a>	|	<a href="#show">Show questionnaire</a>	
 	<title>{% block title %}Questionnaire Index - user : {{request.user}}{% endblock %}</title>
-	<h1>Questionnaire Index</h1>
+	<a name="top"><h1>Questionnaire Index</h1></a>
 	<h3>user : {{request.user}}</h3>
+
 	{% if group_list %}
-	<h4>Try questionnaire</h4>
-	
-		
+	<a name="try"><h4>Try questionnaire</h4></a>			
          {% for x in group_list %}
-         <li> <a href="qs/{{ x.id }}/">Questionnaire : {{ x.name }}</a></li>
-                     
+         <li> <a href="qs/{{ x.id }}/">Questionnaire : {{ x.name }}</a></li>                     
          {% endfor %}
+         <a href="#top">Back to top</a>
              
-     	<h4>Check/Edit your answered Questionnaire</h4>
+    <a name="check"><h4>Check/Edit your answered Questionnaire</h4></a>
          {% for x in group_list %}
          <li> <a href="{{x.id }}">Questionnaire : {{x.name }}</a></li>
          {% endfor %}   
-      
+      	 <a href="#top">Back to top</a>
          
-         
-		<h4>Show questionnaire answers trail</h4>
+    <a name="show"><h4>Show questionnaire answers trail</h4></a>
          {% for x in group_list %}
-         <li> <a href="trailquestionanswers/{{user.id}}/{{ x.id }}/1">Questionnaire : {{ x.name }}</a></li>
-                     
-         {% endfor %}           
-         
+         <li> <a href="trailquestionanswers/{{user.id}}/{{ x.id }}/1">Questionnaire : {{ x.name }}</a></li>            
+         {% endfor %}
+         <a href="#top">Back to top</a>          
 
-                     
-           
 	{% endif %}
 {% endblock %}
