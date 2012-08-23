@@ -66,8 +66,8 @@ class Question(models.Model):
         textfield- if the  question answer require typing more detail info in a form text field 
         select_dropdown_field- if the question answer require selecting one answer from some options  
         multiplechoicefield-if the question answer require selecting one or more answer from some options ,this options are rendered as multiplechoice checkboxes in a form
-        radioselectfield-render radio button horinzontally if  the question  answer require selecting only one answer from some options ,this  options are rendered as radio buttons in a form
-        horinzontal_radioselect_field- render radio buttons horinzontally same as radioselect_field
+        radioselectfield-render radio button horizontally if  the question  answer require selecting only one answer from some options ,this  options are rendered as radio buttons in a form
+        horizontal_radioselect_field- render radio buttons horizontally same as radioselect_field
         'datefield'- date field type for date 
     3.selectoptions :list of choices or options available for  question .Required for field type that is choicefields i.e select_dropdown_field,radioselectfield, multiplechoicefield
                      otherwise selectoptions is None .options stored as comma ","seperarted strings
@@ -80,7 +80,7 @@ class Question(models.Model):
         db_table ='question'
         
     FIELD_TYPE_CHOICES=(('charfield','charfield'),('textfield','textfield'),('booleanfield','boolean'),
-                        ('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('horinzontal_radioselect_field','horinzontal_radioselect_field'),('multiplechoicefield','multiplechoicefield'))
+                        ('select_dropdown_field','select_dropdown_field'),('radioselectfield','radioselectfield'),('horizontal_radioselect_field','horizontal_radioselect_field'),('multiplechoicefield','multiplechoicefield'))
     
     label=models.CharField('question',max_length=255)
     field_type=models.CharField(choices=FIELD_TYPE_CHOICES,max_length=100)    
@@ -92,10 +92,10 @@ class Question(models.Model):
     def save(self,*args,**kwgs):
         '''
           ensure selectoption for non choicefield is saved as None 
-          only choicefields require selectoptions i.e select_dropdown_field,radioselectfield,horinzontal_radioselect_field, multiplechoicefield should have options 
+          only choicefields require selectoptions i.e select_dropdown_field,radioselectfield,horizontal_radioselect_field, multiplechoicefield should have options 
         '''
         if not self.id:
-            if not self.field_type in ['select_dropdown_field','radioselectfield','horinzontal_radioselect_field' ,'multiplechoicefield'] :              
+            if not self.field_type in ['select_dropdown_field','radioselectfield','horizontal_radioselect_field' ,'multiplechoicefield'] :              
                 self.selectoptions = None
             
         super(Question,self).save(*args,**kwgs)

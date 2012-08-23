@@ -6,7 +6,7 @@ Created on Jun 26, 2012
 '''
 from django.http import HttpResponseRedirect,Http404
 from django.core.urlresolvers import reverse
-from models import  Questionnaire,AnswerSet,QuestionAnswer,Question, QuestionGroup
+from models import  Questionnaire,AnswerSet,QuestionAnswer,Question
 from django.template import  RequestContext
 from django.shortcuts import render_to_response
 from questionnaire.forms import make_question_group_form

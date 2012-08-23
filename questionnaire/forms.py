@@ -50,7 +50,7 @@ class QuestionAdminForm(forms.ModelForm):
         field_type=self.cleaned_data["field_type"]
         selectoptions = self.cleaned_data["selectoptions"]
         
-        if field_type  in ['select_dropdown_field','radioselectfield','horinzontal_radioselect_field', 'multiplechoicefield'] : 
+        if field_type  in ['select_dropdown_field','radioselectfield','horizontal_radioselect_field', 'multiplechoicefield'] : 
             
             if  not selectoptions:
                 raise forms.ValidationError("Select Options is required for "+ str(field_type)+ " Enter valid options seperated with commas e.g No,Yes,Not Applicable")        
@@ -143,7 +143,7 @@ def generate_select_dropdown_field():
     '''
     return ChoiceField(choices=[],show_hidden_initial=True)
 
-def generate_horinzontal_radioselect_field():
+def generate_horizontal_radioselect_field():
     '''
     @return a ChoiceField that has a RadioSelect widget -if you require only one answer from atleast two or more options
     choices is defaulted to empty list as the choices will be populate by get_choices() function with predefined choice method during form creation
@@ -184,7 +184,7 @@ FIELD_TYPES={
             'booleanfield': generate_boolean_field,
             'select_dropdown_field':generate_select_dropdown_field,
             'radioselectfield':generate_radioselect_field,
-            'horinzontal_radioselect_field':generate_horinzontal_radioselect_field,
+            'horizontal_radioselect_field':generate_horizontal_radioselect_field,
             'multiplechoicefield':generate_multiplechoice_field,
 
             }
@@ -218,7 +218,7 @@ def make_question_group_form(questiongroup,questionnaire_id):
     
     for question in orderedgroups:
         
-        if question.field_type in ['select_dropdown_field','radioselectfield','horinzontal_radioselect_field','multiplechoicefield']:
+        if question.field_type in ['select_dropdown_field','radioselectfield','horizontal_radioselect_field','multiplechoicefield']:
             field=FIELD_TYPES[question.field_type]()
             field.choices=get_choices(question)    
             field.label = question.label
